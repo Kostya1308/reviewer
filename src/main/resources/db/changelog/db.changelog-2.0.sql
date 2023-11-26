@@ -9,9 +9,57 @@ VALUES ('feature/core-read-from-file');
 
 --changeset knpiskunov:fill_launch_line_table
 INSERT INTO launch_line(line, result_path, branch_id)
-VALUES ('3-1 2-5 5-1 discountCard=1111 balanceDebitCard=100', 'classpath:csv/correct/1.csv', 1);
+VALUES ('3-1 2-5 5-1 discountCard=1111 balanceDebitCard=100', 'classpath:csv/correct/core/1.csv', 1);
 
 INSERT INTO launch_line(line, result_path, branch_id)
-VALUES ('3-1 2-5 5-1 balanceDebitCard=100', 'classpath:csv/correct/2.csv', 1);
+VALUES ('3-1 2-5 5-1 balanceDebitCard=100', 'classpath:csv/correct/core/2.csv', 1);
 
+INSERT INTO launch_line(line, result_path, branch_id)
+VALUES ('3-1 2-5 5-1 3-1 discountCard=1111 balanceDebitCard=100', 'classpath:csv/correct/core/3.csv', 1);
 
+INSERT INTO launch_line(line, result_path, branch_id)
+VALUES ('3-1 2-5 5-1 3-1 discountCard=1111 balanceDebitCard=0', 'classpath:csv/correct/core/4.csv', 1);
+
+INSERT INTO launch_line(line, result_path, branch_id)
+VALUES ('3-10 2-5 5-1 3-1 balanceDebitCard=100', 'classpath:csv/correct/core/5.csv', 1);
+
+INSERT INTO launch_line(line, result_path, branch_id)
+VALUES ('21-7 2-5 5-1 3-1 balanceDebitCard=100', 'classpath:csv/correct/core/6.csv', 1);
+
+INSERT INTO launch_line(line, result_path, branch_id)
+VALUES ('balanceDebitCard=100', 'classpath:csv/correct/core/7.csv', 1);
+
+INSERT INTO launch_line(line, result_path, branch_id)
+VALUES ('3-7 2-5 5-1 3-1', 'classpath:csv/correct/core/8.csv', 1);
+
+INSERT INTO launch_line(line, result_path, branch_id)
+VALUES ('3-1 2-5 5-1 discountCard=1111 balanceDebitCard=100 pathToFile=./src/main/resources/products.csv saveToFile=1.csv
+'', ''classpath:csv/correct/core-read-from-file/1.csv', 'classpath:csv/correct/core/1.csv', 2);
+
+INSERT INTO launch_line(line, result_path, branch_id)
+VALUES ('3-1 2-5 5-1 balanceDebitCard=100 pathToFile=./src/main/resources/products.csv saveToFile=1.csv
+'', ''classpath:csv/correct/core-read-from-file/1.csv', 'classpath:csv/correct/core/2.csv', 2);
+
+INSERT INTO launch_line(line, result_path, branch_id)
+VALUES ('3-1 2-5 5-1 3-1 discountCard=1111 balanceDebitCard=100 pathToFile=./src/main/resources/products.csv saveToFile=1.csv
+'', ''classpath:csv/correct/core-read-from-file/1.csv', 'classpath:csv/correct/core/3.csv', 2);
+
+INSERT INTO launch_line(line, result_path, branch_id)
+VALUES ('3-1 2-5 5-1 3-1 discountCard=1111 balanceDebitCard=0 pathToFile=./src/main/resources/products.csv saveToFile=1.csv
+'', ''classpath:csv/correct/core-read-from-file/1.csv', 'classpath:csv/correct/core/4.csv', 2);
+
+INSERT INTO launch_line(line, result_path, branch_id)
+VALUES ('3-10 2-5 5-1 3-1 balanceDebitCard=100 pathToFile=./src/main/resources/products.csv saveToFile=1.csv
+'', ''classpath:csv/correct/core-read-from-file/1.csv', 'classpath:csv/correct/core/5.csv', 2);
+
+INSERT INTO launch_line(line, result_path, branch_id)
+VALUES ('21-7 2-5 5-1 3-1 balanceDebitCard=100 pathToFile=./src/main/resources/products.csv saveToFile=1.csv
+'', ''classpath:csv/correct/core-read-from-file/1.csv', 'classpath:csv/correct/core/6.csv', 2);
+
+INSERT INTO launch_line(line, result_path, branch_id)
+VALUES ('balanceDebitCard=100 pathToFile=./src/main/resources/products.csv saveToFile=1.csv
+'', ''classpath:csv/correct/core-read-from-file/1.csv', 'classpath:csv/correct/core/7.csv', 2);
+
+INSERT INTO launch_line(line, result_path, branch_id)
+VALUES ('3-7 2-5 5-1 3-1 pathToFile=./src/main/resources/products.csv saveToFile=1.csv
+'', ''classpath:csv/correct/core-read-from-file/1.csv', 'classpath:csv/correct/core/8.csv', 2);
