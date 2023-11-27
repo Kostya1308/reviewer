@@ -9,6 +9,7 @@ import ru.clevertec.courses.reviewer.entity.LaunchLine;
 import ru.clevertec.courses.reviewer.exception.IncorrectFileStructureException;
 import ru.clevertec.courses.reviewer.parser.ParsingStrategy;
 import ru.clevertec.courses.reviewer.repository.LaunchLineRepository;
+import ru.clevertec.courses.reviewer.service.LaunchLineService;
 
 import static ru.clevertec.courses.reviewer.util.FileUtil.*;
 
@@ -21,8 +22,8 @@ public class ParsingStrategyFactory {
 
     private final List<Node> nodes = new ArrayList<>();
 
+    private final LaunchLineService launchLineService;
     private final List<ParsingStrategy> parsingStrategies;
-    private final LaunchLineRepository launchLineRepository;
 
     @PostConstruct
     public void parsingStrategyFactory() {
@@ -32,15 +33,14 @@ public class ParsingStrategyFactory {
     }
 
     public ParsingStrategy getStrategy(String header, String fileName) {
-        String line = launchLineRepository.findById(Integer.valueOf(substringToDot(fileName)))
-                .map(LaunchLine::getArguments)
-                .orElse(null);
-
         return this.nodes.stream()
                 .filter(node -> header.contains(node.getHeader()))
                 .findAny()
                 .map(Node::getParsingStrategy)
-                .orElseThrow(() -> new IncorrectFileStructureException(line));
+                .orElseThrow(() -> {
+                    String line = launchLineService.getArgsByLaunchLineId(Integer.valueOf(substringToDot(fileName)));
+                    return new IncorrectFileStructureException(line);
+                });
     }
 
     @Data
