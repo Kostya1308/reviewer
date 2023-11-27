@@ -5,6 +5,10 @@ spring:
     password: ${POSTGRES_PASSWORD:root}
   application:
     name: reviewer
+  docker:
+    compose:
+      enabled: true
+      file: docker-compose.yaml
   liquibase:
     default-schema: public
     enabled: true
@@ -13,6 +17,7 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
       ddl-auto: validate
+
 app:
   branch: ${BRANCH:2}
   tasks-path: ${TASKS_PATH:classpath:csv/received/core.read.from.file}
