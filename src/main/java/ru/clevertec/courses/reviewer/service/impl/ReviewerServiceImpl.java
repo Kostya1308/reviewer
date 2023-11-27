@@ -83,7 +83,7 @@ public class ReviewerServiceImpl implements ReviewerService {
                 .findAny()
                 .flatMap(launchLineRepository::findById)
                 .ifPresent(launchLine -> {
-                    throw new RequiredReceiptIsMissingException(launchLine.getLine());
+                    throw new RequiredReceiptIsMissingException(launchLine.getArguments());
                 });
 
         list.stream()

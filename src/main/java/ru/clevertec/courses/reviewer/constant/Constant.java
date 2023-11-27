@@ -2,7 +2,6 @@ package ru.clevertec.courses.reviewer.constant;
 
 public class Constant {
 
-
     private Constant() {
     }
 
@@ -24,14 +23,13 @@ public class Constant {
 
     public static final String ERROR_HEADER = "ERROR";
 
-    //TODO вынести в спецефическое исключение
     public static final String INCORRECT_STRUCTURE_MESSAGE = "Некорректная структура сформированного чека";
 
     public static final String DOT = ".";
     public static final String APPENDER = "\n";
+    public static final String EMPTY_LINE = "";
     public static final String SEPARATOR_STRING = ";";
     public static final Character SEPARATOR_CHAR = ';';
-
 
     public static final Integer REQUIRED_NUMBER_ONE = 1;
     public static final Integer DEFAULT_NUMBER_LINES_TO_SKIP = 2;

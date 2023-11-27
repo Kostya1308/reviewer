@@ -7,6 +7,8 @@ import ru.clevertec.courses.reviewer.dto.TaskDto;
 import ru.clevertec.courses.reviewer.exception.IncorrectErrorMessageException;
 import ru.clevertec.courses.reviewer.repository.LaunchLineRepository;
 
+import static java.util.function.Predicate.*;
+
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -23,11 +25,11 @@ public class ReasonForBlankProcessor extends AbstractCheckingProcessor {
         Map<Integer, BlankReceiptDto> receiptDtoToReviewMap = getBlankReceipts(taskDto.getReceiptDtoToReviewMap());
 
         correctReceiptDtoMap.entrySet().stream()
-                .filter(getNonEqualsMessagePredicate(receiptDtoToReviewMap))
+                .filter(not(getNonEqualsMessagePredicate(receiptDtoToReviewMap)))
                 .findAny()
                 .flatMap(entry -> launchLineRepository.findById(entry.getKey()))
                 .ifPresent(line -> {
-                    throw new IncorrectErrorMessageException(line.getLine());
+                    throw new IncorrectErrorMessageException(line.getArguments());
                 });
 
     }
@@ -35,7 +37,7 @@ public class ReasonForBlankProcessor extends AbstractCheckingProcessor {
     private static Predicate<Map.Entry<Integer, BlankReceiptDto>> getNonEqualsMessagePredicate(Map<Integer, BlankReceiptDto> receiptDtoToReviewMap) {
         return entry -> {
             BlankReceiptDto blankReceiptDto = receiptDtoToReviewMap.get(entry.getKey());
-            return !Objects.equals(blankReceiptDto.getErrorMessage(), entry.getValue().getErrorMessage());
+            return Objects.equals(blankReceiptDto.getErrorMessage(), entry.getValue().getErrorMessage());
         };
     }
 

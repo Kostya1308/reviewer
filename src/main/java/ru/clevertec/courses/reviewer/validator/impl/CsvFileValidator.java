@@ -1,7 +1,7 @@
 package ru.clevertec.courses.reviewer.validator.impl;
 
 import org.springframework.stereotype.Component;
-import ru.clevertec.courses.reviewer.exception.FailedReviewException;
+import ru.clevertec.courses.reviewer.exception.IncorrectFileStructureException;
 import ru.clevertec.courses.reviewer.validator.CsvValidator;
 
 import static ru.clevertec.courses.reviewer.constant.Constant.INCORRECT_STRUCTURE_MESSAGE;
@@ -16,7 +16,7 @@ public class CsvFileValidator implements CsvValidator {
                 .anyMatch(header -> Arrays.toString(strings).contains(header));
 
         if (nextLineIsNotHeader) {
-            throw new FailedReviewException(INCORRECT_STRUCTURE_MESSAGE);
+            throw new IncorrectFileStructureException(INCORRECT_STRUCTURE_MESSAGE);
         }
     }
 
@@ -25,7 +25,7 @@ public class CsvFileValidator implements CsvValidator {
                 .allMatch(header -> Arrays.toString(strings).contains(header));
 
         if (!firstLineIsHeader) {
-            throw new FailedReviewException(INCORRECT_STRUCTURE_MESSAGE);
+            throw new IncorrectFileStructureException(INCORRECT_STRUCTURE_MESSAGE);
         }
     }
 

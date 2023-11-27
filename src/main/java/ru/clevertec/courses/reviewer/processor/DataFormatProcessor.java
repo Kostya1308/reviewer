@@ -9,7 +9,7 @@ import ru.clevertec.courses.reviewer.dto.TaskDto;
 import ru.clevertec.courses.reviewer.entity.LaunchLine;
 import ru.clevertec.courses.reviewer.exception.IncorrectDateTimeFormat;
 import ru.clevertec.courses.reviewer.exception.IncorrectMonetaryValueFormat;
-import ru.clevertec.courses.reviewer.repository.LaunchLineRepository;
+import ru.clevertec.courses.reviewer.service.LaunchLineService;
 
 import static java.util.function.Predicate.not;
 
@@ -34,7 +34,7 @@ public class DataFormatProcessor extends AbstractCheckingProcessor {
     private static final String DATE_PATTERN = "dd.MM.yyyy";
     private static final String MONETARY_VALUE_PATTERN = "\\d+\\.\\d{2}\\$";
 
-    private final LaunchLineRepository launchLineRepository;
+    private final LaunchLineService launchLineService;
 
     @Override
     public void check(TaskDto taskDto) {
@@ -55,9 +55,7 @@ public class DataFormatProcessor extends AbstractCheckingProcessor {
             LocalDate.parse(dateTimeInfo.getDate(), DateTimeFormatter.ofPattern(DATE_PATTERN));
 
         } catch (DateTimeParseException e) {
-            String line = launchLineRepository.findById(receiptDtoEntry.getKey())
-                    .map(LaunchLine::getLine)
-                    .orElse(null);
+            String line = launchLineService.getArgsByLaunchLineId(receiptDtoEntry.getKey());
             throw new IncorrectDateTimeFormat(line);
         }
     }
@@ -77,9 +75,7 @@ public class DataFormatProcessor extends AbstractCheckingProcessor {
                 .ifPresent(totalInfo -> goodDescriptions.add(Constant.TOTAL_HEADER));
 
         if (!goodDescriptions.isEmpty()) {
-            String line = launchLineRepository.findById(receiptDtoEntry.getKey())
-                    .map(LaunchLine::getLine)
-                    .orElse(null);
+            String line = launchLineService.getArgsByLaunchLineId(receiptDtoEntry.getKey());
             throw new IncorrectMonetaryValueFormat(line, goodDescriptions.toString());
         }
     }

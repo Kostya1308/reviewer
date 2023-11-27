@@ -6,7 +6,7 @@ import ru.clevertec.courses.reviewer.dto.CompletedReceiptDto;
 import ru.clevertec.courses.reviewer.dto.TaskDto;
 import ru.clevertec.courses.reviewer.entity.LaunchLine;
 import ru.clevertec.courses.reviewer.exception.IncorrectGoodListException;
-import ru.clevertec.courses.reviewer.repository.LaunchLineRepository;
+import ru.clevertec.courses.reviewer.service.LaunchLineService;
 
 import static java.util.function.Predicate.not;
 
@@ -18,7 +18,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ListGoodsProcessor extends AbstractCheckingProcessor {
 
-    private final LaunchLineRepository launchLineRepository;
+    private final LaunchLineService launchLineService;
 
     @Override
     public void check(TaskDto taskDto) {
@@ -43,9 +43,7 @@ public class ListGoodsProcessor extends AbstractCheckingProcessor {
                 .forEach(redundantDescriptions::add);
 
         if (!redundantDescriptions.isEmpty() || !requiredDescriptions.isEmpty()) {
-            String line = launchLineRepository.findById(lineId)
-                    .map(LaunchLine::getLine)
-                    .orElse(null);
+            String line = launchLineService.getArgsByLaunchLineId(lineId);
             throw new IncorrectGoodListException(line, requiredDescriptions, redundantDescriptions);
         }
     }

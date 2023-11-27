@@ -33,7 +33,7 @@ public class ParsingStrategyFactory {
 
     public ParsingStrategy getStrategy(String header, String fileName) {
         String line = launchLineRepository.findById(Integer.valueOf(substringToDot(fileName)))
-                .map(LaunchLine::getLine)
+                .map(LaunchLine::getArguments)
                 .orElse(null);
 
         return this.nodes.stream()

@@ -29,7 +29,7 @@ public class LaunchLine {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private String line;
+    private String arguments;
 
     private String resultPath;
 

@@ -14,9 +14,9 @@ CREATE SEQUENCE branch_is_seq START WITH 1 INCREMENT BY 1;
 CREATE TABLE IF NOT EXISTS launch_line
 (
     id          serial PRIMARY KEY,
-    line        varchar(200) NOT NULL,
+    arguments   varchar(200) NOT NULL,
     result_path varchar(100) NOT NULL,
-    branch_id   serial NOT NULL,
+    branch_id   serial       NOT NULL,
     CONSTRAINT fk_launch_line_branch
         FOREIGN KEY (branch_id) REFERENCES branch (id)
 );
