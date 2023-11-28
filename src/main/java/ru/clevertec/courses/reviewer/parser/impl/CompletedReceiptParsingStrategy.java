@@ -8,8 +8,6 @@ import org.springframework.stereotype.Component;
 import ru.clevertec.courses.reviewer.dto.CompletedReceiptDto;
 import ru.clevertec.courses.reviewer.dto.ReceiptDto;
 import ru.clevertec.courses.reviewer.exception.IncorrectFileStructureException;
-import ru.clevertec.courses.reviewer.service.LaunchLineService;
-import ru.clevertec.courses.reviewer.util.FileUtil;
 import ru.clevertec.courses.reviewer.validator.CsvValidator;
 
 import static ru.clevertec.courses.reviewer.constant.Constant.DATE_HEADER;
@@ -27,6 +25,7 @@ import static ru.clevertec.courses.reviewer.constant.Constant.TOTAL_DISCOUNT_HEA
 import static ru.clevertec.courses.reviewer.constant.Constant.TOTAL_HEADER;
 import static ru.clevertec.courses.reviewer.constant.Constant.TOTAL_PRICE_HEADER;
 import static ru.clevertec.courses.reviewer.constant.Constant.TOTAL_WITH_DISCOUNT_HEADER;
+import static ru.clevertec.courses.reviewer.util.FileUtil.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -45,8 +44,8 @@ import java.util.Optional;
 @Component
 public class CompletedReceiptParsingStrategy extends ParsingStrategy {
 
-    public CompletedReceiptParsingStrategy(CsvValidator csvValidator, LaunchLineService launchLineService) {
-        super(csvValidator, launchLineService);
+    public CompletedReceiptParsingStrategy(CsvValidator csvValidator) {
+        super(csvValidator);
     }
 
     @Override
@@ -72,9 +71,7 @@ public class CompletedReceiptParsingStrategy extends ParsingStrategy {
                     .build();
 
         } catch (IncorrectFileStructureException e) {
-            String name = FileUtil.substringToDot(file.getName());
-            String args = launchLineService.getArgsByLaunchLineId(Integer.valueOf(name));
-            throw new IncorrectFileStructureException(args);
+            throw new IncorrectFileStructureException(substringToDot(file.getName()));
         }
 
     }

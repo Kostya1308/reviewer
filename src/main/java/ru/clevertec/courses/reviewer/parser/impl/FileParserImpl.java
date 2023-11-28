@@ -8,10 +8,9 @@ import ru.clevertec.courses.reviewer.dto.ReceiptDto;
 import ru.clevertec.courses.reviewer.exception.IncorrectFileStructureException;
 import ru.clevertec.courses.reviewer.factory.ParsingStrategyFactory;
 import ru.clevertec.courses.reviewer.parser.FileParser;
-import ru.clevertec.courses.reviewer.service.LaunchLineService;
-import ru.clevertec.courses.reviewer.util.FileUtil;
 
-import static java.nio.charset.StandardCharsets.*;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static ru.clevertec.courses.reviewer.util.FileUtil.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -23,7 +22,6 @@ import java.io.InputStreamReader;
 @RequiredArgsConstructor
 public class FileParserImpl implements FileParser {
 
-    private final LaunchLineService launchLineService;
     private final ParsingStrategyFactory parsingStrategyFactory;
 
     public ReceiptDto parseCsvFile(File file) {
@@ -40,9 +38,7 @@ public class FileParserImpl implements FileParser {
         } catch (IOException e) {
             log.error(e.getMessage());
         } catch (IncorrectFileStructureException e) {
-            String name = FileUtil.substringToDot(file.getName());
-            String args = launchLineService.getArgsByLaunchLineId(Integer.valueOf(name));
-            throw new IncorrectFileStructureException(args);
+            throw new IncorrectFileStructureException(substringToDot(file.getName()));
         }
 
         return receiptDto;

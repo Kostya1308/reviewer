@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import ru.clevertec.courses.reviewer.dto.ReceiptDto;
 import ru.clevertec.courses.reviewer.exception.IncorrectFileStructureException;
-import ru.clevertec.courses.reviewer.service.LaunchLineService;
 import ru.clevertec.courses.reviewer.validator.CsvValidator;
 
 import static ru.clevertec.courses.reviewer.constant.Constant.*;
@@ -19,7 +18,6 @@ import java.util.List;
 public abstract class ParsingStrategy {
 
     protected final CsvValidator csvValidator;
-    protected final LaunchLineService launchLineService;
 
     public abstract ReceiptDto parse(File file);
 
@@ -62,7 +60,7 @@ public abstract class ParsingStrategy {
 
     protected <T> T getRequiredFirstItem(List<T> parseList) {
         if (parseList.size() == REQUIRED_NUMBER_ONE) {
-            return parseList.get(0);
+            return parseList.getFirst();
         } else {
             throw new IncorrectFileStructureException();
         }

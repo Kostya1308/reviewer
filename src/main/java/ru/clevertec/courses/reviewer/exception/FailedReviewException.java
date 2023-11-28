@@ -7,6 +7,5 @@ public class FailedReviewException extends RuntimeException {
     }
 
     public FailedReviewException() {
-
     }
 }

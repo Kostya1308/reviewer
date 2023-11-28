@@ -1,40 +1,45 @@
 package ru.clevertec.courses.reviewer.processor;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.clevertec.courses.reviewer.dto.BlankReceiptDto;
 import ru.clevertec.courses.reviewer.dto.TaskDto;
 import ru.clevertec.courses.reviewer.exception.IncorrectErrorMessageException;
-import ru.clevertec.courses.reviewer.repository.LaunchLineRepository;
+import ru.clevertec.courses.reviewer.parser.FileParser;
 
-import static java.util.function.Predicate.*;
+import static java.util.function.Predicate.not;
+import static ru.clevertec.courses.reviewer.util.FileUtil.*;
 
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class ReasonForBlankProcessor extends AbstractCheckingProcessor {
 
-    private final LaunchLineRepository launchLineRepository;
+    private final FileParser fileParser;
 
     @Override
     public void check(TaskDto taskDto) {
-        Map<Integer, BlankReceiptDto> correctReceiptDtoMap = getBlankReceipts(taskDto.getCorrectReceiptDtoMap());
-        Map<Integer, BlankReceiptDto> receiptDtoToReviewMap = getBlankReceipts(taskDto.getReceiptDtoToReviewMap());
+        log.info("Running the blank cheque cause check filter");
+
+        var correctReceiptDtoMap = getBlankReceiptsMap(taskDto.getCorrectReceiptDtoMap(fileParser));
+        var receiptDtoToReviewMap = getBlankReceiptsMap(taskDto.getReceiptDtoToReviewMap(fileParser));
 
         correctReceiptDtoMap.entrySet().stream()
                 .filter(not(getNonEqualsMessagePredicate(receiptDtoToReviewMap)))
                 .findAny()
-                .flatMap(entry -> launchLineRepository.findById(entry.getKey()))
-                .ifPresent(line -> {
-                    throw new IncorrectErrorMessageException(line.getArguments());
+                .ifPresent(entry -> {
+                    throw new IncorrectErrorMessageException(substringToDot(entry.getKey()));
                 });
 
+        log.info("The blank cheque cause check filter has been successfully passed");
     }
 
-    private static Predicate<Map.Entry<Integer, BlankReceiptDto>> getNonEqualsMessagePredicate(Map<Integer, BlankReceiptDto> receiptDtoToReviewMap) {
+    private static Predicate<Map.Entry<String, BlankReceiptDto>> getNonEqualsMessagePredicate(Map<String, BlankReceiptDto> receiptDtoToReviewMap) {
         return entry -> {
             BlankReceiptDto blankReceiptDto = receiptDtoToReviewMap.get(entry.getKey());
             return Objects.equals(blankReceiptDto.getErrorMessage(), entry.getValue().getErrorMessage());
@@ -43,6 +48,6 @@ public class ReasonForBlankProcessor extends AbstractCheckingProcessor {
 
     @Override
     public int getOrder() {
-        return 10;
+        return 20;
     }
 }

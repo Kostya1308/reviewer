@@ -7,9 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.clevertec.courses.reviewer.exception.IncorrectFileStructureException;
 import ru.clevertec.courses.reviewer.parser.impl.ParsingStrategy;
-import ru.clevertec.courses.reviewer.service.LaunchLineService;
-
-import static ru.clevertec.courses.reviewer.util.FileUtil.*;
 
 import java.util.ArrayList;
 import java.util.List;

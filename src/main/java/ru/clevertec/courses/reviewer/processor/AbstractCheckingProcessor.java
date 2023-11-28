@@ -13,14 +13,14 @@ public abstract class AbstractCheckingProcessor implements Ordered {
 
     public abstract void check(TaskDto taskDto);
 
-    Map<Integer, CompletedReceiptDto> getCompletedReceipts(Map<Integer, ReceiptDto> receiptDtoMap) {
+    Map<String, CompletedReceiptDto> getCompletedReceiptsMap(Map<String, ReceiptDto> receiptDtoMap) {
         return receiptDtoMap.entrySet()
                 .stream()
                 .filter(entry -> entry.getValue() instanceof CompletedReceiptDto)
                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> (CompletedReceiptDto) entry.getValue()));
     }
 
-    Map<Integer, BlankReceiptDto> getBlankReceipts(Map<Integer, ReceiptDto> receiptDtoMap) {
+    Map<String, BlankReceiptDto> getBlankReceiptsMap(Map<String, ReceiptDto> receiptDtoMap) {
         return receiptDtoMap.entrySet()
                 .stream()
                 .filter(entry -> entry.getValue() instanceof BlankReceiptDto)

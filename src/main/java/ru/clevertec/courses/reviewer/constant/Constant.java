@@ -23,11 +23,8 @@ public class Constant {
 
     public static final String ERROR_HEADER = "ERROR";
 
-    public static final String INCORRECT_STRUCTURE_MESSAGE = "Некорректная структура сформированного чека";
-
     public static final String DOT = ".";
     public static final String APPENDER = "\n";
-    public static final String EMPTY_LINE = "";
     public static final String SEPARATOR_STRING = ";";
     public static final Character SEPARATOR_CHAR = ';';
 

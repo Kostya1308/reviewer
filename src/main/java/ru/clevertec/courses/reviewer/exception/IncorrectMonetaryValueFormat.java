@@ -2,11 +2,11 @@ package ru.clevertec.courses.reviewer.exception;
 
 public class IncorrectMonetaryValueFormat extends FailedReviewException {
 
-    private static final String ERROR_MESSAGE = "Некорректный формат денежных значений. Команда для запуска - " +
-            "'java -jar <RunnerClassName>.jar %s. Позиции - %s";
+    private static final String ERROR_MESSAGE = "Некорректный формат денежных значений. " +
+            "Параметры командной строки: '%s', позиции: %s";
 
-    public IncorrectMonetaryValueFormat(String line, String goodsDescriptions) {
-        super(String.format(ERROR_MESSAGE, line, goodsDescriptions));
+    public IncorrectMonetaryValueFormat(String args, String goodDescriptions) {
+        super(String.format(ERROR_MESSAGE, args, goodDescriptions));
     }
 
 }

@@ -1,36 +1,43 @@
 package ru.clevertec.courses.reviewer.processor;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.clevertec.courses.reviewer.dto.CompletedReceiptDto;
 import ru.clevertec.courses.reviewer.dto.TaskDto;
-import ru.clevertec.courses.reviewer.entity.LaunchLine;
 import ru.clevertec.courses.reviewer.exception.IncorrectGoodListException;
-import ru.clevertec.courses.reviewer.service.LaunchLineService;
+import ru.clevertec.courses.reviewer.parser.FileParser;
 
 import static java.util.function.Predicate.not;
+import static ru.clevertec.courses.reviewer.util.FileUtil.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
-public class ListGoodsProcessor extends AbstractCheckingProcessor {
+public class ExistenceGoodsProcessor extends AbstractCheckingProcessor {
 
-    private final LaunchLineService launchLineService;
+    private final FileParser fileParser;
 
     @Override
     public void check(TaskDto taskDto) {
-        Map<Integer, CompletedReceiptDto> correctReceiptDtoMap = getCompletedReceipts(taskDto.getCorrectReceiptDtoMap());
-        Map<Integer, CompletedReceiptDto> receiptDtoToReviewMap = getCompletedReceipts(taskDto.getReceiptDtoToReviewMap());
+        log.info("Running the filter to check for required/redundant goods");
+
+        var correctReceiptDtoMap = getCompletedReceiptsMap(taskDto.getCorrectReceiptDtoMap(fileParser));
+        var receiptDtoToReviewMap = getCompletedReceiptsMap(taskDto.getReceiptDtoToReviewMap(fileParser));
 
         correctReceiptDtoMap.forEach((key, value) ->
                 checkForExistingGoods(key, getDescriptions(value), getDescriptions(receiptDtoToReviewMap.get(key)))
         );
+
+        log.info("The filter to check for required/redundant goods has been successfully passed");
     }
 
-    private void checkForExistingGoods(Integer lineId, List<String> correctDescriptions, List<String> reviewedDescriptions) {
+    private void checkForExistingGoods(String fileName,
+                                       List<String> correctDescriptions,
+                                       List<String> reviewedDescriptions) throws IncorrectGoodListException {
         List<String> requiredDescriptions = new ArrayList<>();
         List<String> redundantDescriptions = new ArrayList<>();
 
@@ -43,11 +50,9 @@ public class ListGoodsProcessor extends AbstractCheckingProcessor {
                 .forEach(redundantDescriptions::add);
 
         if (!redundantDescriptions.isEmpty() || !requiredDescriptions.isEmpty()) {
-            String line = launchLineService.getArgsByLaunchLineId(lineId);
-            throw new IncorrectGoodListException(line, requiredDescriptions, redundantDescriptions);
+            throw new IncorrectGoodListException(substringToDot(fileName), requiredDescriptions, redundantDescriptions);
         }
     }
-
 
     private static List<String> getDescriptions(CompletedReceiptDto completedReceiptDto) {
         return completedReceiptDto.getGoodsInfoList().stream()
@@ -57,7 +62,7 @@ public class ListGoodsProcessor extends AbstractCheckingProcessor {
 
     @Override
     public int getOrder() {
-        return 20;
+        return 30;
     }
 
 }
