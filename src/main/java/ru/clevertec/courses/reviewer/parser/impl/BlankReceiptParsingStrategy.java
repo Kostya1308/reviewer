@@ -7,7 +7,8 @@ import org.springframework.stereotype.Component;
 import ru.clevertec.courses.reviewer.constant.Constant;
 import ru.clevertec.courses.reviewer.dto.BlankReceiptDto;
 import ru.clevertec.courses.reviewer.dto.ReceiptDto;
-import ru.clevertec.courses.reviewer.parser.ParsingStrategy;
+import ru.clevertec.courses.reviewer.service.LaunchLineService;
+import ru.clevertec.courses.reviewer.validator.CsvValidator;
 
 import static ru.clevertec.courses.reviewer.constant.Constant.*;
 
@@ -24,7 +25,12 @@ import java.util.Objects;
 
 @Slf4j
 @Component
-public class BlankReceiptParsingStrategy implements ParsingStrategy {
+public class BlankReceiptParsingStrategy extends ParsingStrategy {
+
+
+    public BlankReceiptParsingStrategy(CsvValidator csvValidator, LaunchLineService launchLineService) {
+        super(csvValidator, launchLineService);
+    }
 
     @Override
     public ReceiptDto parse(File file) {

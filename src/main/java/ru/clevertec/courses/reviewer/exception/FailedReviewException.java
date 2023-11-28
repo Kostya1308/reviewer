@@ -6,4 +6,7 @@ public class FailedReviewException extends RuntimeException {
         super(message);
     }
 
+    public FailedReviewException() {
+
+    }
 }

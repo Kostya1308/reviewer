@@ -9,4 +9,7 @@ public class IncorrectFileStructureException extends FailedReviewException {
         super(String.format(ERROR_MESSAGE, line));
     }
 
+    public IncorrectFileStructureException() {
+        super();
+    }
 }

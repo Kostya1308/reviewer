@@ -2,45 +2,50 @@ package ru.clevertec.courses.reviewer.parser.impl;
 
 import com.opencsv.CSVReader;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.clevertec.courses.reviewer.dto.ReceiptDto;
+import ru.clevertec.courses.reviewer.exception.IncorrectFileStructureException;
 import ru.clevertec.courses.reviewer.factory.ParsingStrategyFactory;
 import ru.clevertec.courses.reviewer.parser.FileParser;
-import ru.clevertec.courses.reviewer.parser.ParsingStrategy;
+import ru.clevertec.courses.reviewer.service.LaunchLineService;
+import ru.clevertec.courses.reviewer.util.FileUtil;
+
+import static java.nio.charset.StandardCharsets.*;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.Objects;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class FileParserImpl implements FileParser {
 
+    private final LaunchLineService launchLineService;
     private final ParsingStrategyFactory parsingStrategyFactory;
 
-    @SneakyThrows
     public ReceiptDto parseCsvFile(File file) {
-        try (InputStream commonFileInputStream = new FileInputStream(file);
-             InputStreamReader commonFileInputStreamReader =
-                     new InputStreamReader(Objects.requireNonNull(commonFileInputStream), StandardCharsets.UTF_8);
-             CSVReader commonFileCsvReader = new CSVReader(commonFileInputStreamReader)) {
+        ReceiptDto receiptDto = null;
+
+        try (InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream(file), UTF_8);
+             CSVReader commonFileCsvReader = new CSVReader(inputStreamReader)) {
 
             String[] firstLine = commonFileCsvReader.peek();
-            ParsingStrategy parsingStrategy = parsingStrategyFactory.getStrategy(firstLine[0], file.getName());
+            ParsingStrategy parsingStrategy = parsingStrategyFactory.getStrategy(firstLine[0]);
 
-            return parsingStrategy.parse(file);
+            receiptDto = parsingStrategy.parse(file);
 
         } catch (IOException e) {
             log.error(e.getMessage());
-            throw new IOException(e);
+        } catch (IncorrectFileStructureException e) {
+            String name = FileUtil.substringToDot(file.getName());
+            String args = launchLineService.getArgsByLaunchLineId(Integer.valueOf(name));
+            throw new IncorrectFileStructureException(args);
         }
+
+        return receiptDto;
     }
 
 }

@@ -5,10 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.clevertec.courses.reviewer.entity.LaunchLine;
 import ru.clevertec.courses.reviewer.exception.IncorrectFileStructureException;
-import ru.clevertec.courses.reviewer.parser.ParsingStrategy;
-import ru.clevertec.courses.reviewer.repository.LaunchLineRepository;
+import ru.clevertec.courses.reviewer.parser.impl.ParsingStrategy;
 import ru.clevertec.courses.reviewer.service.LaunchLineService;
 
 import static ru.clevertec.courses.reviewer.util.FileUtil.*;
@@ -22,25 +20,21 @@ public class ParsingStrategyFactory {
 
     private final List<Node> nodes = new ArrayList<>();
 
-    private final LaunchLineService launchLineService;
     private final List<ParsingStrategy> parsingStrategies;
 
     @PostConstruct
-    public void parsingStrategyFactory() {
+    public void fill() {
         parsingStrategies.forEach(strategy ->
                 nodes.add(new Node(strategy.getHeader(), strategy))
         );
     }
 
-    public ParsingStrategy getStrategy(String header, String fileName) {
+    public ParsingStrategy getStrategy(String header) throws IncorrectFileStructureException {
         return this.nodes.stream()
                 .filter(node -> header.contains(node.getHeader()))
                 .findAny()
                 .map(Node::getParsingStrategy)
-                .orElseThrow(() -> {
-                    String line = launchLineService.getArgsByLaunchLineId(Integer.valueOf(substringToDot(fileName)));
-                    return new IncorrectFileStructureException(line);
-                });
+                .orElseThrow(IncorrectFileStructureException::new);
     }
 
     @Data

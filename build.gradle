@@ -31,6 +31,7 @@ dependencies {
 	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
 	implementation group: 'org.apache.commons', name: 'commons-csv', version: '1.10.0'
 	implementation group: 'com.opencsv', name: 'opencsv', version: '5.8'
+	implementation group: 'org.apache.tika', name: 'tika-core', version: '2.9.1'
 
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
 
