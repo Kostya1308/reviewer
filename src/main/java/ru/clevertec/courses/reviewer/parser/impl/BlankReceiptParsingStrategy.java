@@ -9,18 +9,17 @@ import ru.clevertec.courses.reviewer.dto.BlankReceiptDto;
 import ru.clevertec.courses.reviewer.dto.ReceiptDto;
 import ru.clevertec.courses.reviewer.validator.CsvValidator;
 
-import static ru.clevertec.courses.reviewer.constant.Constant.*;
+import static java.nio.charset.StandardCharsets.*;
+import static ru.clevertec.courses.reviewer.constant.Constant.SEPARATOR_CHAR;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Slf4j
 @Component
@@ -34,25 +33,15 @@ public class BlankReceiptParsingStrategy extends ParsingStrategy {
     public ReceiptDto parse(File file) {
         List<BlankReceiptDto> blankReceiptDtoList = new ArrayList<>();
 
-        try (InputStream commonFileInputStream = new FileInputStream(file);
-             InputStreamReader commonFileInputStreamReader =
-                     new InputStreamReader(Objects.requireNonNull(commonFileInputStream), StandardCharsets.UTF_8);
-             CSVReader commonFileCsvReader = new CSVReader(commonFileInputStreamReader)) {
+        try (var commonFileInputStreamReader = new InputStreamReader(new FileInputStream(file), UTF_8);
+             var commonFileCsvReader = new CSVReader(commonFileInputStreamReader)) {
 
             List<String[]> errorStringArrayList = getLastStringArrayList(commonFileCsvReader);
             String errorCsvData = getCsvData(errorStringArrayList);
+            var errorInputStreamReader = new InputStreamReader(new ByteArrayInputStream(errorCsvData.getBytes(UTF_8)));
 
-            InputStream errorInputStream = new ByteArrayInputStream(errorCsvData.getBytes(StandardCharsets.UTF_8));
-            InputStreamReader errorInputStreamReader =
-                    new InputStreamReader(Objects.requireNonNull(errorInputStream), StandardCharsets.UTF_8);
+            blankReceiptDtoList = getParseList(errorInputStreamReader, BlankReceiptDto.class);
 
-            blankReceiptDtoList = new CsvToBeanBuilder<BlankReceiptDto>(errorInputStreamReader)
-                    .withType(BlankReceiptDto.class)
-                    .withSeparator(SEPARATOR_CHAR)
-                    .build()
-                    .parse();
-
-            errorInputStream.close();
             errorInputStreamReader.close();
 
         } catch (IOException e) {

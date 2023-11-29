@@ -22,7 +22,7 @@ public class CsvFileValidator implements CsvValidator {
     }
 
     public void checkFirstLineIsHeader(String[] lineArray, String... headers) throws IncorrectFileStructureException {
-        String[] firstLines = lineArray[0].split(SEPARATOR_STRING);
+        String[] firstLines = Arrays.asList(lineArray).getFirst().split(SEPARATOR_STRING);
 
         Arrays.stream(headers)
                 .filter(header -> Arrays.stream(firstLines).noneMatch(item -> Objects.equals(item, header)))

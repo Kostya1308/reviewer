@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 
 @Slf4j
 @Component
@@ -31,7 +32,7 @@ public class FileParserImpl implements FileParser {
              CSVReader commonFileCsvReader = new CSVReader(inputStreamReader)) {
 
             String[] firstLine = commonFileCsvReader.peek();
-            ParsingStrategy parsingStrategy = parsingStrategyFactory.getStrategy(firstLine[0]);
+            ParsingStrategy parsingStrategy = parsingStrategyFactory.getStrategy(Arrays.asList(firstLine).getFirst());
 
             receiptDto = parsingStrategy.parse(file);
 

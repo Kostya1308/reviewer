@@ -208,30 +208,4 @@ public class CompletedReceiptParsingStrategy extends ParsingStrategy {
         return getRequiredFirstItem(discountParse);
     }
 
-    private static <T extends CompletedReceiptDto.Body> List<T> getParseList(InputStreamReader inputStreamReader,
-                                                                             Class<T> clazz) {
-        List<T> parse = new CsvToBeanBuilder<T>(inputStreamReader)
-                .withType(clazz)
-                .withSeparator(SEPARATOR_CHAR)
-                .build()
-                .parse();
-
-        return getCastedList(parse);
-    }
-
-    private static <T extends CompletedReceiptDto.Body> List<T> getCastedList(List<T> parse) {
-        List<T> castedList = new ArrayList<>();
-
-        for (T t : parse) {
-            try {
-                castedList.add(t);
-            } catch (ClassCastException e) {
-                log.error(e.getMessage());
-            }
-        }
-
-        return castedList;
-    }
-
-
 }

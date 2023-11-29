@@ -33,7 +33,7 @@ public class FileFormatProcessor extends AbstractCheckingProcessor {
     }
 
     @SneakyThrows
-    private void checkCsvFileFormat(File file) throws IncorrectFileFormatException{
+    private void checkCsvFileFormat(File file) throws IncorrectFileFormatException {
         try (BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream(file))) {
             Detector detector = new DefaultDetector();
             Metadata metadata = new Metadata();

@@ -22,8 +22,9 @@ public class TaskDto {
     public Map<String, ReceiptDto> getCorrectReceiptDtoMap(FileParser fileParser) {
         return Optional.ofNullable(correctReceiptDtoMap)
                 .orElseGet(() -> {
-                    this.setCorrectReceiptDtoMap(correctFiles.stream()
-                            .collect(Collectors.toMap(File::getName, fileParser::parseCsvFile)));
+                    var receiptDtoMap = correctFiles.stream()
+                            .collect(Collectors.toMap(File::getName, fileParser::parseCsvFile));
+                    this.setCorrectReceiptDtoMap(receiptDtoMap);
                     return correctReceiptDtoMap;
                 });
     }
@@ -31,8 +32,9 @@ public class TaskDto {
     public Map<String, ReceiptDto> getReceiptDtoToReviewMap(FileParser fileParser) {
         return Optional.ofNullable(receiptDtoToReviewMap)
                 .orElseGet(() -> {
-                    receiptDtoToReviewMap = filesToReview.stream()
+                    var receiptDtoMap = filesToReview.stream()
                             .collect(Collectors.toMap(File::getName, fileParser::parseCsvFile));
+                    this.setReceiptDtoToReviewMap(receiptDtoMap);
                     return receiptDtoToReviewMap;
                 });
     }

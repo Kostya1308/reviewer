@@ -1,6 +1,7 @@
 package ru.clevertec.courses.reviewer.parser.impl;
 
 import com.opencsv.CSVReader;
+import com.opencsv.bean.CsvToBeanBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import ru.clevertec.courses.reviewer.dto.ReceiptDto;
@@ -10,6 +11,7 @@ import ru.clevertec.courses.reviewer.validator.CsvValidator;
 import static ru.clevertec.courses.reviewer.constant.Constant.*;
 
 import java.io.File;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -56,6 +58,14 @@ public abstract class ParsingStrategy {
         }
 
         return totalStringArrayList;
+    }
+
+    protected <T> List<T> getParseList(InputStreamReader inputStreamReader, Class<T> clazz) {
+        return new CsvToBeanBuilder<T>(inputStreamReader)
+                .withType(clazz)
+                .withSeparator(SEPARATOR_CHAR)
+                .build()
+                .parse();
     }
 
     protected <T> T getRequiredFirstItem(List<T> parseList) {

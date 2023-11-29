@@ -22,6 +22,7 @@ public class ExistenceFilesProcessor extends AbstractCheckingProcessor {
     @Override
     public void check(TaskDto taskDto) {
         log.info("Running the filter to check for required/redundant files");
+
         taskDto.getCorrectFiles().stream()
                 .map(File::getName)
                 .filter(not(getContainsPredicate(taskDto.getFilesToReview())))
