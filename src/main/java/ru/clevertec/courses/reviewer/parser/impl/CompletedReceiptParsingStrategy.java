@@ -9,7 +9,21 @@ import ru.clevertec.courses.reviewer.dto.ReceiptDto;
 import ru.clevertec.courses.reviewer.exception.IncorrectFileStructureException;
 import ru.clevertec.courses.reviewer.validator.CsvValidator;
 
-import static ru.clevertec.courses.reviewer.constant.Constant.*;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static ru.clevertec.courses.reviewer.constant.Constant.DATE_HEADER;
+import static ru.clevertec.courses.reviewer.constant.Constant.DEFAULT_NUMBER_LINES_TO_SKIP;
+import static ru.clevertec.courses.reviewer.constant.Constant.DESCRIPTION_HEADER;
+import static ru.clevertec.courses.reviewer.constant.Constant.DISCOUNT_CARD_HEADER;
+import static ru.clevertec.courses.reviewer.constant.Constant.DISCOUNT_HEADER;
+import static ru.clevertec.courses.reviewer.constant.Constant.DISCOUNT_PERCENTAGE_HEADER;
+import static ru.clevertec.courses.reviewer.constant.Constant.PRICE_HEADER;
+import static ru.clevertec.courses.reviewer.constant.Constant.QTY_HEADER;
+import static ru.clevertec.courses.reviewer.constant.Constant.REQUIRED_NUMBER_ONE;
+import static ru.clevertec.courses.reviewer.constant.Constant.TIME_HEADER;
+import static ru.clevertec.courses.reviewer.constant.Constant.TOTAL_DISCOUNT_HEADER;
+import static ru.clevertec.courses.reviewer.constant.Constant.TOTAL_HEADER;
+import static ru.clevertec.courses.reviewer.constant.Constant.TOTAL_PRICE_HEADER;
+import static ru.clevertec.courses.reviewer.constant.Constant.TOTAL_WITH_DISCOUNT_HEADER;
 import static ru.clevertec.courses.reviewer.util.FileUtil.*;
 
 import java.io.ByteArrayInputStream;
@@ -18,7 +32,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -68,7 +81,7 @@ public class CompletedReceiptParsingStrategy extends ParsingStrategy {
     private CompletedReceiptDto.DateTimeInfo getDateTimeParse(File file) throws IncorrectFileStructureException {
         List<CompletedReceiptDto.DateTimeInfo> dateTimeParse = new ArrayList<>();
 
-        try (var commonFileInputStreamReader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
+        try (var commonFileInputStreamReader = new InputStreamReader(new FileInputStream(file), UTF_8);
              var commonFileCsvReader = new CSVReaderBuilder(commonFileInputStreamReader)
                      .withCSVParser(icsvParser)
                      .build()) {
@@ -78,14 +91,12 @@ public class CompletedReceiptParsingStrategy extends ParsingStrategy {
             List<String[]> dateTimeStringArrayList = getStringArrayList(commonFileCsvReader, QTY_HEADER);
             String dateTimeCsvData = getCsvData(dateTimeStringArrayList);
 
-            InputStream datetimeInputStream = new ByteArrayInputStream(dateTimeCsvData.getBytes(StandardCharsets.UTF_8));
-            InputStreamReader datetimeInputStreamReader =
-                    new InputStreamReader(Objects.requireNonNull(datetimeInputStream), StandardCharsets.UTF_8);
+            var dateTimeInputStreamReader =
+                    new InputStreamReader(new ByteArrayInputStream(dateTimeCsvData.getBytes(UTF_8)), UTF_8);
 
-            dateTimeParse = getParseList(datetimeInputStreamReader, CompletedReceiptDto.DateTimeInfo.class);
+            dateTimeParse = getParseList(dateTimeInputStreamReader, CompletedReceiptDto.DateTimeInfo.class);
 
-            datetimeInputStream.close();
-            datetimeInputStreamReader.close();
+            dateTimeInputStreamReader.close();
 
         } catch (IOException e) {
             log.error(e.getMessage());
@@ -98,7 +109,7 @@ public class CompletedReceiptParsingStrategy extends ParsingStrategy {
             throws IncorrectFileStructureException {
         List<CompletedReceiptDto.GoodsInfo> goodsParse = new ArrayList<>();
 
-        try (var commonFileInputStreamReader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
+        try (var commonFileInputStreamReader = new InputStreamReader(new FileInputStream(file), UTF_8);
              var commonFileCsvReader = new CSVReaderBuilder(commonFileInputStreamReader)
                      .withSkipLines(skipLines)
                      .withCSVParser(icsvParser)
@@ -110,9 +121,9 @@ public class CompletedReceiptParsingStrategy extends ParsingStrategy {
             List<String[]> goodsStringArrayList = getStringArrayList(commonFileCsvReader, DISCOUNT_CARD_HEADER, TOTAL_PRICE_HEADER);
             String goodsCsvData = getCsvData(goodsStringArrayList);
 
-            InputStream goodsInputStream = new ByteArrayInputStream(goodsCsvData.getBytes(StandardCharsets.UTF_8));
+            InputStream goodsInputStream = new ByteArrayInputStream(goodsCsvData.getBytes(UTF_8));
             InputStreamReader goodsInputStreamReader =
-                    new InputStreamReader(Objects.requireNonNull(goodsInputStream), StandardCharsets.UTF_8);
+                    new InputStreamReader(Objects.requireNonNull(goodsInputStream), UTF_8);
 
             goodsParse = getParseList(goodsInputStreamReader, CompletedReceiptDto.GoodsInfo.class);
 
@@ -132,7 +143,7 @@ public class CompletedReceiptParsingStrategy extends ParsingStrategy {
             throws IncorrectFileStructureException {
         List<CompletedReceiptDto.DiscountInfo> discountParse = new ArrayList<>();
 
-        try (var commonFileInputStreamReader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
+        try (var commonFileInputStreamReader = new InputStreamReader(new FileInputStream(file), UTF_8);
              var commonFileCsvReader = new CSVReaderBuilder(commonFileInputStreamReader)
                      .withSkipLines(skipLines)
                      .withCSVParser(icsvParser)
@@ -147,9 +158,9 @@ public class CompletedReceiptParsingStrategy extends ParsingStrategy {
             List<String[]> discountStringArrayList = getStringArrayList(commonFileCsvReader, TOTAL_HEADER);
             String discountCsvData = getCsvData(discountStringArrayList);
 
-            InputStream discountInputStream = new ByteArrayInputStream(discountCsvData.getBytes(StandardCharsets.UTF_8));
+            InputStream discountInputStream = new ByteArrayInputStream(discountCsvData.getBytes(UTF_8));
             InputStreamReader discountInputStreamReader =
-                    new InputStreamReader(Objects.requireNonNull(discountInputStream), StandardCharsets.UTF_8);
+                    new InputStreamReader(Objects.requireNonNull(discountInputStream), UTF_8);
 
             discountParse = getParseList(discountInputStreamReader, CompletedReceiptDto.DiscountInfo.class);
 
@@ -168,7 +179,7 @@ public class CompletedReceiptParsingStrategy extends ParsingStrategy {
             throws IncorrectFileStructureException {
         List<CompletedReceiptDto.TotalInfo> discountParse = new ArrayList<>();
 
-        try (var commonFileInputStreamReader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
+        try (var commonFileInputStreamReader = new InputStreamReader(new FileInputStream(file), UTF_8);
              var commonFileCsvReader = new CSVReaderBuilder(commonFileInputStreamReader)
                      .withSkipLines(skipLines)
                      .withCSVParser(icsvParser)
@@ -180,9 +191,9 @@ public class CompletedReceiptParsingStrategy extends ParsingStrategy {
             List<String[]> totalStringArrayList = getLastStringArrayList(commonFileCsvReader);
             String totalCsvData = getCsvData(totalStringArrayList);
 
-            InputStream totalInputStream = new ByteArrayInputStream(totalCsvData.getBytes(StandardCharsets.UTF_8));
+            InputStream totalInputStream = new ByteArrayInputStream(totalCsvData.getBytes(UTF_8));
             InputStreamReader totalInputStreamReader =
-                    new InputStreamReader(Objects.requireNonNull(totalInputStream), StandardCharsets.UTF_8);
+                    new InputStreamReader(Objects.requireNonNull(totalInputStream), UTF_8);
 
             discountParse = getParseList(totalInputStreamReader, CompletedReceiptDto.TotalInfo.class);
 
