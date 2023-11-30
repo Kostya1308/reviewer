@@ -1,6 +1,5 @@
 package ru.clevertec.courses.reviewer.parser.impl;
 
-import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.ICSVParser;
 import lombok.extern.slf4j.Slf4j;
