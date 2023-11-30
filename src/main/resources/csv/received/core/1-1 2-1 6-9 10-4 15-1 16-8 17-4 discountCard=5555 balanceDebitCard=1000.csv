@@ -1,0 +1,17 @@
+Date;Time
+30.11.2023;19:45:30
+
+QTY;DESCRIPTION;PRICE;DISCOUNT;TOTAL
+8;Sunflower oil 1l;1.20$;0.19$;9.60$
+4;Chocolate Ritter sport 100g;1.10$;0.09$;4.40$
+1;Milk;1.07$;0.02$;1.07$
+1;Cream 400g;2.71$;0.05$;2.71$
+9;Packed tomatoes 350g;1.60$;0.29$;14.40$
+4;Packed beef fillet 1kg;12.80$;1.02$;51.20$
+1;Olive oil 500ml;5.30$;0.11$;5.30$
+
+DISCOUNT CARD;DISCOUNT PERCENTAGE
+5555;2%
+
+TOTAL PRICE;TOTAL DISCOUNT;TOTAL WITH DISCOUNT
+88.68$;1.77$;86.91$
