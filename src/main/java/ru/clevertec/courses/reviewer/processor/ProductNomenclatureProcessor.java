@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.clevertec.courses.reviewer.dto.CompletedReceiptDto;
 import ru.clevertec.courses.reviewer.dto.TaskDto;
+import ru.clevertec.courses.reviewer.exception.DuplicateGoodsException;
 import ru.clevertec.courses.reviewer.exception.IncorrectGoodListException;
 import ru.clevertec.courses.reviewer.parser.FileParser;
 
@@ -12,18 +13,19 @@ import static java.util.function.Predicate.not;
 import static ru.clevertec.courses.reviewer.util.FileUtil.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class ExistenceGoodsProcessor extends AbstractCheckingProcessor {
+public class ProductNomenclatureProcessor extends AbstractCheckingProcessor {
 
     private final FileParser fileParser;
 
     @Override
     public void check(TaskDto taskDto) {
-        log.info("Running the filter to check for required/redundant goods");
+        log.info("Running the filter to check for goods nomenclature");
 
         var correctReceiptDtoMap = getCompletedReceiptsMap(taskDto.getCorrectReceiptDtoMap(fileParser));
         var receiptDtoToReviewMap = getCompletedReceiptsMap(taskDto.getReceiptDtoToReviewMap(fileParser));
@@ -32,7 +34,10 @@ public class ExistenceGoodsProcessor extends AbstractCheckingProcessor {
                 checkForExistingGoods(key, getDescriptions(value), getDescriptions(receiptDtoToReviewMap.get(key)))
         );
 
-        log.info("The filter to check for required/redundant goods has been successfully passed");
+        receiptDtoToReviewMap.forEach((key, value) ->
+                checkForDuplicates(key, getDescriptions(value)));
+
+        log.info("The filter to check for goods nomenclature has been successfully passed");
     }
 
     private void checkForExistingGoods(String fileName,
@@ -58,6 +63,17 @@ public class ExistenceGoodsProcessor extends AbstractCheckingProcessor {
         return completedReceiptDto.getGoodsInfoList().stream()
                 .map(CompletedReceiptDto.GoodsInfo::getDescription)
                 .toList();
+    }
+
+    private void checkForDuplicates(String fileName, List<String> descriptions) {
+        HashSet<String> uniqueDescriptions = new HashSet<>();
+        List<String> duplicates = descriptions.stream()
+                .filter(description -> !uniqueDescriptions.add(description))
+                .toList();
+
+        if (!duplicates.isEmpty()) {
+            throw new DuplicateGoodsException(fileName, duplicates);
+        }
     }
 
     @Override
