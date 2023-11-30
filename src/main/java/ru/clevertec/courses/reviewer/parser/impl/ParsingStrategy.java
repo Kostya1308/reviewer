@@ -1,14 +1,21 @@
 package ru.clevertec.courses.reviewer.parser.impl;
 
 import com.opencsv.CSVReader;
+import com.opencsv.ICSVParser;
+import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
+import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import ru.clevertec.courses.reviewer.dto.ReceiptDto;
 import ru.clevertec.courses.reviewer.exception.IncorrectFileStructureException;
 import ru.clevertec.courses.reviewer.validator.CsvValidator;
 
-import static ru.clevertec.courses.reviewer.constant.Constant.*;
+import static ru.clevertec.courses.reviewer.constant.Constant.APPENDER;
+import static ru.clevertec.courses.reviewer.constant.Constant.EMPTY_STRING_ARRAY;
+import static ru.clevertec.courses.reviewer.constant.Constant.REQUIRED_NUMBER_ONE;
+import static ru.clevertec.courses.reviewer.constant.Constant.SEPARATOR_CHAR;
+import static ru.clevertec.courses.reviewer.constant.Constant.SEPARATOR_STRING;
 
 import java.io.File;
 import java.io.InputStreamReader;
@@ -19,6 +26,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public abstract class ParsingStrategy {
 
+    protected final ICSVParser icsvParser;
     protected final CsvValidator csvValidator;
 
     public abstract ReceiptDto parse(File file);
@@ -60,12 +68,21 @@ public abstract class ParsingStrategy {
         return totalStringArrayList;
     }
 
-    protected <T> List<T> getParseList(InputStreamReader inputStreamReader, Class<T> clazz) {
-        return new CsvToBeanBuilder<T>(inputStreamReader)
+    protected <T> List<T> getParseList(InputStreamReader inputStreamReader, Class<T> clazz)
+            throws IncorrectFileStructureException {
+
+        CsvToBean<T> csvToBean = new CsvToBeanBuilder<T>(inputStreamReader)
                 .withType(clazz)
                 .withSeparator(SEPARATOR_CHAR)
-                .build()
-                .parse();
+                .withThrowExceptions(true)
+                .withExceptionHandler(exception -> new CsvRequiredFieldEmptyException())
+                .build();
+
+        try {
+            return csvToBean.parse();
+        } catch (Exception e) {
+            throw new IncorrectFileStructureException();
+        }
     }
 
     protected <T> T getRequiredFirstItem(List<T> parseList) {

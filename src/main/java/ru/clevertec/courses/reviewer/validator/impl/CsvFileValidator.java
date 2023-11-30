@@ -4,8 +4,6 @@ import org.springframework.stereotype.Component;
 import ru.clevertec.courses.reviewer.exception.IncorrectFileStructureException;
 import ru.clevertec.courses.reviewer.validator.CsvValidator;
 
-import static ru.clevertec.courses.reviewer.constant.Constant.SEPARATOR_STRING;
-
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -22,10 +20,8 @@ public class CsvFileValidator implements CsvValidator {
     }
 
     public void checkFirstLineIsHeader(String[] lineArray, String... headers) throws IncorrectFileStructureException {
-        String[] firstLines = Arrays.asList(lineArray).getFirst().split(SEPARATOR_STRING);
-
         Arrays.stream(headers)
-                .filter(header -> Arrays.stream(firstLines).noneMatch(item -> Objects.equals(item, header)))
+                .filter(header -> Arrays.stream(lineArray).noneMatch(item -> Objects.equals(item, header)))
                 .findAny()
                 .ifPresent(header -> {
                     throw new IncorrectFileStructureException();

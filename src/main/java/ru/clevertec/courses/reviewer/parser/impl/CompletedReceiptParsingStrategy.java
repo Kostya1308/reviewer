@@ -1,8 +1,7 @@
 package ru.clevertec.courses.reviewer.parser.impl;
 
-import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
-import com.opencsv.bean.CsvToBeanBuilder;
+import com.opencsv.ICSVParser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.clevertec.courses.reviewer.dto.CompletedReceiptDto;
@@ -10,21 +9,7 @@ import ru.clevertec.courses.reviewer.dto.ReceiptDto;
 import ru.clevertec.courses.reviewer.exception.IncorrectFileStructureException;
 import ru.clevertec.courses.reviewer.validator.CsvValidator;
 
-import static ru.clevertec.courses.reviewer.constant.Constant.DATE_HEADER;
-import static ru.clevertec.courses.reviewer.constant.Constant.DEFAULT_NUMBER_LINES_TO_SKIP;
-import static ru.clevertec.courses.reviewer.constant.Constant.DESCRIPTION_HEADER;
-import static ru.clevertec.courses.reviewer.constant.Constant.DISCOUNT_CARD_HEADER;
-import static ru.clevertec.courses.reviewer.constant.Constant.DISCOUNT_HEADER;
-import static ru.clevertec.courses.reviewer.constant.Constant.DISCOUNT_PERCENTAGE_HEADER;
-import static ru.clevertec.courses.reviewer.constant.Constant.PRICE_HEADER;
-import static ru.clevertec.courses.reviewer.constant.Constant.QTY_HEADER;
-import static ru.clevertec.courses.reviewer.constant.Constant.REQUIRED_NUMBER_ONE;
-import static ru.clevertec.courses.reviewer.constant.Constant.SEPARATOR_CHAR;
-import static ru.clevertec.courses.reviewer.constant.Constant.TIME_HEADER;
-import static ru.clevertec.courses.reviewer.constant.Constant.TOTAL_DISCOUNT_HEADER;
-import static ru.clevertec.courses.reviewer.constant.Constant.TOTAL_HEADER;
-import static ru.clevertec.courses.reviewer.constant.Constant.TOTAL_PRICE_HEADER;
-import static ru.clevertec.courses.reviewer.constant.Constant.TOTAL_WITH_DISCOUNT_HEADER;
+import static ru.clevertec.courses.reviewer.constant.Constant.*;
 import static ru.clevertec.courses.reviewer.util.FileUtil.*;
 
 import java.io.ByteArrayInputStream;
@@ -44,8 +29,8 @@ import java.util.Optional;
 @Component
 public class CompletedReceiptParsingStrategy extends ParsingStrategy {
 
-    public CompletedReceiptParsingStrategy(CsvValidator csvValidator) {
-        super(csvValidator);
+    public CompletedReceiptParsingStrategy(ICSVParser icsvParser, CsvValidator csvValidator) {
+        super(icsvParser, csvValidator);
     }
 
     @Override
@@ -73,7 +58,6 @@ public class CompletedReceiptParsingStrategy extends ParsingStrategy {
         } catch (IncorrectFileStructureException e) {
             throw new IncorrectFileStructureException(substringToDot(file.getName()));
         }
-
     }
 
     @Override
@@ -84,10 +68,10 @@ public class CompletedReceiptParsingStrategy extends ParsingStrategy {
     private CompletedReceiptDto.DateTimeInfo getDateTimeParse(File file) throws IncorrectFileStructureException {
         List<CompletedReceiptDto.DateTimeInfo> dateTimeParse = new ArrayList<>();
 
-        try (InputStream commonFileInputStream = new FileInputStream(file);
-             InputStreamReader commonFileInputStreamReader =
-                     new InputStreamReader(Objects.requireNonNull(commonFileInputStream), StandardCharsets.UTF_8);
-             CSVReader commonFileCsvReader = new CSVReader(commonFileInputStreamReader)) {
+        try (var commonFileInputStreamReader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
+             var commonFileCsvReader = new CSVReaderBuilder(commonFileInputStreamReader)
+                     .withCSVParser(icsvParser)
+                     .build()) {
 
             csvValidator.checkFirstLineIsHeader(commonFileCsvReader.peek(), DATE_HEADER, TIME_HEADER);
 
@@ -110,14 +94,14 @@ public class CompletedReceiptParsingStrategy extends ParsingStrategy {
         return getRequiredFirstItem(dateTimeParse);
     }
 
-    private List<CompletedReceiptDto.GoodsInfo> getGoodsParse(File file, int skipLines) {
+    private List<CompletedReceiptDto.GoodsInfo> getGoodsParse(File file, int skipLines)
+            throws IncorrectFileStructureException {
         List<CompletedReceiptDto.GoodsInfo> goodsParse = new ArrayList<>();
 
-        try (InputStream commonFileInputStream = new FileInputStream(file);
-             InputStreamReader commonFileInputStreamReader =
-                     new InputStreamReader(Objects.requireNonNull(commonFileInputStream), StandardCharsets.UTF_8);
-             CSVReader commonFileCsvReader = new CSVReaderBuilder(commonFileInputStreamReader)
+        try (var commonFileInputStreamReader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
+             var commonFileCsvReader = new CSVReaderBuilder(commonFileInputStreamReader)
                      .withSkipLines(skipLines)
+                     .withCSVParser(icsvParser)
                      .build()) {
 
             csvValidator.checkFirstLineIsHeader(commonFileCsvReader.peek(), QTY_HEADER, DESCRIPTION_HEADER, PRICE_HEADER,
@@ -137,19 +121,21 @@ public class CompletedReceiptParsingStrategy extends ParsingStrategy {
 
         } catch (IOException e) {
             log.error(e.getMessage());
+        } catch (IncorrectFileStructureException e) {
+            throw new IncorrectFileStructureException();
         }
 
         return goodsParse;
     }
 
-    private CompletedReceiptDto.DiscountInfo getDiscountParse(File file, int skipLines) {
+    private CompletedReceiptDto.DiscountInfo getDiscountParse(File file, int skipLines)
+            throws IncorrectFileStructureException {
         List<CompletedReceiptDto.DiscountInfo> discountParse = new ArrayList<>();
 
-        try (InputStream commonFileInputStream = new FileInputStream(file);
-             InputStreamReader commonFileInputStreamReader =
-                     new InputStreamReader(Objects.requireNonNull(commonFileInputStream), StandardCharsets.UTF_8);
-             CSVReader commonFileCsvReader = new CSVReaderBuilder(commonFileInputStreamReader)
+        try (var commonFileInputStreamReader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
+             var commonFileCsvReader = new CSVReaderBuilder(commonFileInputStreamReader)
                      .withSkipLines(skipLines)
+                     .withCSVParser(icsvParser)
                      .build()) {
 
             if (Arrays.toString(commonFileCsvReader.peek()).contains(TOTAL_PRICE_HEADER)) {
@@ -178,16 +164,18 @@ public class CompletedReceiptParsingStrategy extends ParsingStrategy {
     }
 
 
-    private CompletedReceiptDto.TotalInfo getTotalParse(File file, int skipLines) {
+    private CompletedReceiptDto.TotalInfo getTotalParse(File file, int skipLines)
+            throws IncorrectFileStructureException {
         List<CompletedReceiptDto.TotalInfo> discountParse = new ArrayList<>();
-        try (InputStream commonFileInputStream = new FileInputStream(file);
-             InputStreamReader commonFileInputStreamReader =
-                     new InputStreamReader(Objects.requireNonNull(commonFileInputStream), StandardCharsets.UTF_8);
-             CSVReader commonFileCsvReader = new CSVReaderBuilder(commonFileInputStreamReader)
+
+        try (var commonFileInputStreamReader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
+             var commonFileCsvReader = new CSVReaderBuilder(commonFileInputStreamReader)
                      .withSkipLines(skipLines)
+                     .withCSVParser(icsvParser)
                      .build()) {
 
-            csvValidator.checkFirstLineIsHeader(commonFileCsvReader.peek(), TOTAL_PRICE_HEADER, TOTAL_DISCOUNT_HEADER, TOTAL_WITH_DISCOUNT_HEADER);
+            csvValidator.checkFirstLineIsHeader(commonFileCsvReader.peek(), TOTAL_PRICE_HEADER, TOTAL_DISCOUNT_HEADER,
+                    TOTAL_WITH_DISCOUNT_HEADER);
 
             List<String[]> totalStringArrayList = getLastStringArrayList(commonFileCsvReader);
             String totalCsvData = getCsvData(totalStringArrayList);

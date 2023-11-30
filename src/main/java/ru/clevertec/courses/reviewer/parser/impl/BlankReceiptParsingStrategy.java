@@ -1,7 +1,8 @@
 package ru.clevertec.courses.reviewer.parser.impl;
 
 import com.opencsv.CSVReader;
-import com.opencsv.bean.CsvToBeanBuilder;
+import com.opencsv.CSVReaderBuilder;
+import com.opencsv.ICSVParser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.clevertec.courses.reviewer.constant.Constant;
@@ -9,15 +10,13 @@ import ru.clevertec.courses.reviewer.dto.BlankReceiptDto;
 import ru.clevertec.courses.reviewer.dto.ReceiptDto;
 import ru.clevertec.courses.reviewer.validator.CsvValidator;
 
-import static java.nio.charset.StandardCharsets.*;
-import static ru.clevertec.courses.reviewer.constant.Constant.SEPARATOR_CHAR;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,8 +24,8 @@ import java.util.List;
 @Component
 public class BlankReceiptParsingStrategy extends ParsingStrategy {
 
-    public BlankReceiptParsingStrategy(CsvValidator csvValidator) {
-        super(csvValidator);
+    public BlankReceiptParsingStrategy(ICSVParser icsvParser, CsvValidator csvValidator) {
+        super(icsvParser, csvValidator);
     }
 
     @Override
@@ -34,7 +33,9 @@ public class BlankReceiptParsingStrategy extends ParsingStrategy {
         List<BlankReceiptDto> blankReceiptDtoList = new ArrayList<>();
 
         try (var commonFileInputStreamReader = new InputStreamReader(new FileInputStream(file), UTF_8);
-             var commonFileCsvReader = new CSVReader(commonFileInputStreamReader)) {
+             var commonFileCsvReader = new CSVReaderBuilder(commonFileInputStreamReader)
+                     .withCSVParser(icsvParser)
+                     .build()) {
 
             List<String[]> errorStringArrayList = getLastStringArrayList(commonFileCsvReader);
             String errorCsvData = getCsvData(errorStringArrayList);
