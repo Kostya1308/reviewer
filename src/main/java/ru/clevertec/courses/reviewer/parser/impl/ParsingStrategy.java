@@ -11,12 +11,10 @@ import ru.clevertec.courses.reviewer.dto.ReceiptDto;
 import ru.clevertec.courses.reviewer.exception.IncorrectFileStructureException;
 import ru.clevertec.courses.reviewer.validator.CsvValidator;
 
-import static ru.clevertec.courses.reviewer.constant.Constant.APPENDER;
-import static ru.clevertec.courses.reviewer.constant.Constant.EMPTY_STRING_ARRAY;
-import static ru.clevertec.courses.reviewer.constant.Constant.REQUIRED_NUMBER_ONE;
-import static ru.clevertec.courses.reviewer.constant.Constant.SEPARATOR_CHAR;
-import static ru.clevertec.courses.reviewer.constant.Constant.SEPARATOR_STRING;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static ru.clevertec.courses.reviewer.constant.Constant.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -33,7 +31,7 @@ public abstract class ParsingStrategy {
 
     public abstract String getHeader();
 
-    String getCsvData(List<String[]> stringArrayList) {
+    protected String getCsvData(List<String[]> stringArrayList) {
         StringBuilder stringBuilder = new StringBuilder();
         for (String[] array : stringArrayList) {
             stringBuilder.append(String.join(SEPARATOR_STRING, array));
@@ -44,50 +42,52 @@ public abstract class ParsingStrategy {
     }
 
     @SneakyThrows
-    protected List<String[]> getStringArrayList(CSVReader commonFileCsvReader, String... headers)
+    protected List<String[]> getStringArrayList(List<String> currentHeaders, List<String> nextHeaders,
+                                                CSVReader csvReader, boolean isRequired)
             throws IncorrectFileStructureException {
+
+        if (!isRequired && Arrays.asList(csvReader.peek()).equals(nextHeaders)) {
+            return List.of();
+        }
         List<String[]> stringArrayList = new ArrayList<>();
 
-        while (!Arrays.toString(commonFileCsvReader.peek()).equals(Arrays.toString(EMPTY_STRING_ARRAY))) {
-            csvValidator.checkNextLineIsNotHeader(commonFileCsvReader.peek(), headers);
-            stringArrayList.add(commonFileCsvReader.readNext());
+        csvValidator.checkFirstLineIsHeader(csvReader.peek(), currentHeaders);
+
+        while (!Arrays.toString(csvReader.peek()).equals(Arrays.toString(EMPTY_STRING_ARRAY)) &&
+                csvReader.peek() != null) {
+            csvValidator.checkNextLineIsNotHeader(csvReader.peek(), nextHeaders);
+            stringArrayList.add(csvReader.readNext());
         }
+
+        csvReader.readNext();
 
         return stringArrayList;
     }
 
-    @SneakyThrows
-    protected List<String[]> getLastStringArrayList(CSVReader commonFileCsvReader) {
-        List<String[]> totalStringArrayList = new ArrayList<>();
+    protected <T> List<T> getParseList(String csvData, Class<T> clazz) throws IncorrectFileStructureException {
+        try (var inputStreamReader = new InputStreamReader(new ByteArrayInputStream(csvData.getBytes(UTF_8)), UTF_8)) {
 
-        while (!(Arrays.toString(commonFileCsvReader.peek()).equals(Arrays.toString(EMPTY_STRING_ARRAY)) ||
-                commonFileCsvReader.peek() == null)) {
-            totalStringArrayList.add(commonFileCsvReader.readNext());
-        }
+            CsvToBean<T> csvToBean = new CsvToBeanBuilder<T>(inputStreamReader)
+                    .withType(clazz)
+                    .withSeparator(SEPARATOR_CHAR)
+                    .withThrowExceptions(true)
+                    .withExceptionHandler(exception -> new CsvRequiredFieldEmptyException())
+                    .build();
 
-        return totalStringArrayList;
-    }
-
-    protected <T> List<T> getParseList(InputStreamReader inputStreamReader, Class<T> clazz)
-            throws IncorrectFileStructureException {
-
-        CsvToBean<T> csvToBean = new CsvToBeanBuilder<T>(inputStreamReader)
-                .withType(clazz)
-                .withSeparator(SEPARATOR_CHAR)
-                .withThrowExceptions(true)
-                .withExceptionHandler(exception -> new CsvRequiredFieldEmptyException())
-                .build();
-
-        try {
             return csvToBean.parse();
+
         } catch (Exception e) {
             throw new IncorrectFileStructureException();
         }
     }
 
     protected <T> T getRequiredFirstItem(List<T> parseList) {
-        if (parseList.size() == REQUIRED_NUMBER_ONE) {
+        if (parseList.isEmpty()) {
+            return null;
+
+        } else if (parseList.size() == REQUIRED_NUMBER_ONE) {
             return parseList.getFirst();
+
         } else {
             throw new IncorrectFileStructureException();
         }

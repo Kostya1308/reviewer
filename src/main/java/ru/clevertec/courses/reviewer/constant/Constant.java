@@ -1,5 +1,7 @@
 package ru.clevertec.courses.reviewer.constant;
 
+import java.util.List;
+
 public class Constant {
 
     private Constant() {
@@ -20,6 +22,13 @@ public class Constant {
     public static final String TOTAL_PRICE_HEADER = "TOTAL PRICE";
     public static final String TOTAL_DISCOUNT_HEADER = "TOTAL DISCOUNT";
     public static final String TOTAL_WITH_DISCOUNT_HEADER = "TOTAL WITH DISCOUNT";
+
+    public static final List<String> dateTimeHeaders = List.of(TIME_HEADER, DATE_HEADER);
+    public static final List<String> discountHeaders = List.of(DISCOUNT_CARD_HEADER, DISCOUNT_PERCENTAGE_HEADER);
+    public static final List<String> totalHeaders =
+            List.of(TOTAL_PRICE_HEADER, TOTAL_DISCOUNT_HEADER, TOTAL_WITH_DISCOUNT_HEADER);
+    public static final List<String> goodsHeaders =
+            List.of(QTY_HEADER, PRICE_HEADER, TOTAL_HEADER, DISCOUNT_HEADER, DESCRIPTION_HEADER);
 
     public static final String ERROR_HEADER = "ERROR";
 

@@ -6,11 +6,12 @@
 
 ## Технологический стек проекта
 
-* Java 21
-* Spring Boot 3.2.0
-* Lombok
-* OpenCSV
-* Apache Tika
+* Java 21;
+* Spring Boot 3.2.0;
+* Gradle 8.4;
+* Lombok;
+* OpenCSV;
+* Apache Tika.
 
 **Зависимости от сервисов**
 
