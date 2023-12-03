@@ -7,6 +7,11 @@ public class Constant {
     private Constant() {
     }
 
+    public static final String CORE_BRANCH = "feature/core";
+    public static final String REST_BRANCH = "feature/rest";
+    public static final String CORE_DB_BRANCH = "feature/database";
+    public static final String CORE_FILE_BRANCH = "feature/core-read-from-file";
+
     public static final String TIME_HEADER = "Time";
     public static final String DATE_HEADER = "Date";
 
@@ -34,11 +39,11 @@ public class Constant {
 
     public static final String DOT = ".";
     public static final String APPENDER = "\n";
+    public static final Character QUOTE_CHAR = '#';
     public static final String SEPARATOR_STRING = ";";
     public static final Character SEPARATOR_CHAR = ';';
 
     public static final Integer REQUIRED_NUMBER_ONE = 1;
-    public static final Integer DEFAULT_NUMBER_LINES_TO_SKIP = 2;
 
     public static final String[] EMPTY_STRING_ARRAY = new String[0];
 

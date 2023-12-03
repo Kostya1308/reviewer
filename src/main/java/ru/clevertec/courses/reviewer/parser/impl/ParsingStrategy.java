@@ -49,6 +49,7 @@ public abstract class ParsingStrategy {
         if (!isRequired && Arrays.asList(csvReader.peek()).equals(nextHeaders)) {
             return List.of();
         }
+
         List<String[]> stringArrayList = new ArrayList<>();
 
         csvValidator.checkFirstLineIsHeader(csvReader.peek(), currentHeaders);

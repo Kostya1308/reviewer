@@ -4,7 +4,9 @@ import com.opencsv.CSVParserBuilder;
 import com.opencsv.ICSVParser;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import ru.clevertec.courses.reviewer.constant.Constant;
+
+import static ru.clevertec.courses.reviewer.constant.Constant.QUOTE_CHAR;
+import static ru.clevertec.courses.reviewer.constant.Constant.SEPARATOR_CHAR;
 
 @Configuration
 public class ParsingConfig {
@@ -12,9 +14,9 @@ public class ParsingConfig {
     @Bean
     public ICSVParser icsvParser() {
         return new CSVParserBuilder()
-                .withSeparator(Constant.SEPARATOR_CHAR)
+                .withSeparator(SEPARATOR_CHAR)
                 .withIgnoreQuotations(false)
-                .withQuoteChar('#')
+                .withQuoteChar(QUOTE_CHAR)
                 .build();
     }
 
