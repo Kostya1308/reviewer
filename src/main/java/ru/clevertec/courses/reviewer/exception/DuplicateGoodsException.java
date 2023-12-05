@@ -2,7 +2,7 @@ package ru.clevertec.courses.reviewer.exception;
 
 import java.util.List;
 
-public class DuplicateGoodsException extends FailedReviewException {
+public class DuplicateGoodsException extends FailedConsoleAppReviewException {
 
     private static final String ERROR_MESSAGE = "В списке товаров присуствуют дубликаты. " +
             "Параметры командной строки: '%s'. Позиции: %s";
