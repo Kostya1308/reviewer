@@ -7,7 +7,7 @@ import static ru.clevertec.courses.reviewer.constant.Constant.DOT;
 @UtilityClass
 public class FileUtil {
 
-    public String substringToDot(String fileName) {
+    public static String substringToDot(String fileName) {
         return fileName.substring(0, fileName.lastIndexOf(DOT));
     }
 
