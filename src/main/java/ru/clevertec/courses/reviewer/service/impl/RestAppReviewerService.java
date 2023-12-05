@@ -1,11 +1,12 @@
 package ru.clevertec.courses.reviewer.service.impl;
 
+import static ru.clevertec.courses.reviewer.constant.Constant.REST_BRANCH;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.clevertec.courses.reviewer.checker.rest.AbstractRestChecker;
+import ru.clevertec.courses.reviewer.exception.FailedRestReviewException;
 import ru.clevertec.courses.reviewer.service.ReviewerService;
-
-import static ru.clevertec.courses.reviewer.constant.Constant.REST_BRANCH;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,17 +19,21 @@ public class RestAppReviewerService implements ReviewerService {
 
     @Override
     public void reviewTasks() {
-        List<String> exceptionMessages = getExceptionMessages(restCheckers);
+        List<String> exceptionMessages = collectExceptionMessages(restCheckers);
 
         exceptionMessages.stream()
                 .findAny()
                 .ifPresent(message -> {
-                    throw new RuntimeException(exceptionMessages.toString());
+                    throw new FailedRestReviewException(exceptionMessages.toString());
                 });
-
     }
 
-    private List<String> getExceptionMessages(List<AbstractRestChecker> restCheckers) {
+    @Override
+    public List<String> getBranchNames() {
+        return List.of(REST_BRANCH);
+    }
+
+    private List<String> collectExceptionMessages(List<AbstractRestChecker> restCheckers) {
         List<String> exceptionMessages = new ArrayList<>();
         try {
             restCheckers.forEach(AbstractRestChecker::check);
@@ -37,10 +42,5 @@ public class RestAppReviewerService implements ReviewerService {
         }
 
         return exceptionMessages;
-    }
-
-    @Override
-    public List<String> getBranchNames() {
-        return List.of(REST_BRANCH);
     }
 }
