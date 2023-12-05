@@ -1,4 +1,4 @@
-package ru.clevertec.courses.reviewer.processor;
+package ru.clevertec.courses.reviewer.checker.console;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -20,7 +20,7 @@ import java.io.FileInputStream;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class FileFormatProcessor extends AbstractCheckingProcessor {
+public class FileFormatChecker extends AbstractConsoleChecker {
 
     @Override
     public void check(TaskDto taskDto) {
