@@ -1,4 +1,4 @@
-package ru.clevertec.courses.reviewer.processor;
+package ru.clevertec.courses.reviewer.checker.console;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +18,7 @@ import java.util.function.Predicate;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class ReasonForBlankProcessor extends AbstractCheckingProcessor {
+public class ReasonForBlankChecker extends AbstractConsoleChecker {
 
     private final FileParser fileParser;
 

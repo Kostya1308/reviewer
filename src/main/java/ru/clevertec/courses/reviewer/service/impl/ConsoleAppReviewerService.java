@@ -6,19 +6,24 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
+import ru.clevertec.courses.reviewer.chain.impl.ConsoleCheckerChain;
 import ru.clevertec.courses.reviewer.dto.TaskDto;
 import ru.clevertec.courses.reviewer.exception.ResourceNotFoundException;
-import ru.clevertec.courses.reviewer.processor.CheckingProcessorChain;
 import ru.clevertec.courses.reviewer.service.ReviewerService;
+
+import static ru.clevertec.courses.reviewer.constant.Constant.CORE_BRANCH;
+import static ru.clevertec.courses.reviewer.constant.Constant.CORE_DB_BRANCH;
+import static ru.clevertec.courses.reviewer.constant.Constant.CORE_FILE_BRANCH;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ReviewerServiceImpl implements ReviewerService {
+public class ConsoleAppReviewerService implements ReviewerService {
 
     @Value("${app.correct-tasks-path}")
     private String correctTasksPath;
@@ -27,7 +32,7 @@ public class ReviewerServiceImpl implements ReviewerService {
     private String receivedTasksPath;
 
     private final ResourceLoader resourceLoader;
-    private final CheckingProcessorChain checkingProcessorChain;
+    private final ConsoleCheckerChain consoleCheckerChain;
 
     @Override
     @SneakyThrows
@@ -43,7 +48,12 @@ public class ReviewerServiceImpl implements ReviewerService {
                 .filesToReview(Arrays.asList(filesToReview))
                 .build();
 
-        checkingProcessorChain.runChain(taskDto);
+        consoleCheckerChain.runChain(taskDto);
+    }
+
+    @Override
+    public List<String> getBranchNames() {
+        return List.of(CORE_BRANCH, CORE_FILE_BRANCH, CORE_DB_BRANCH);
     }
 
 }

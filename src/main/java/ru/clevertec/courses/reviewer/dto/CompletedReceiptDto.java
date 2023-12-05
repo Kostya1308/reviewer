@@ -21,19 +21,20 @@ import static ru.clevertec.courses.reviewer.constant.Constant.TOTAL_PRICE_HEADER
 import static ru.clevertec.courses.reviewer.constant.Constant.TOTAL_WITH_DISCOUNT_HEADER;
 
 import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-public class CompletedReceiptDto implements ReceiptDto{
+public class CompletedReceiptDto implements ReceiptDto {
 
     private DateTimeInfo dateTimeInfo;
     private List<GoodsInfo> goodsInfoList;
     private DiscountInfo discountInfo;
     private TotalInfo totalInfo;
 
-    public  interface Body {
+    public interface Body {
     }
 
     @Data

@@ -11,8 +11,8 @@ import ru.clevertec.courses.reviewer.dto.ReceiptDto;
 import ru.clevertec.courses.reviewer.exception.IncorrectFileStructureException;
 import ru.clevertec.courses.reviewer.validator.CsvValidator;
 
-import static ru.clevertec.courses.reviewer.constant.Constant.*;
-import static ru.clevertec.courses.reviewer.util.FileUtil.substringToDot;
+import static ru.clevertec.courses.reviewer.constant.Constant.ERROR_HEADER;
+import static ru.clevertec.courses.reviewer.util.FileUtil.*;
 
 import java.io.BufferedInputStream;
 import java.io.File;

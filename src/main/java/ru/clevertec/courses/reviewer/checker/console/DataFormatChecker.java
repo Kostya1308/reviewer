@@ -1,4 +1,4 @@
-package ru.clevertec.courses.reviewer.processor;
+package ru.clevertec.courses.reviewer.checker.console;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class DataFormatProcessor extends AbstractCheckingProcessor {
+public class DataFormatChecker extends AbstractConsoleChecker {
 
     private static final String TIME_PATTERN = "HH:mm:ss";
     private static final String DATE_PATTERN = "dd.MM.yyyy";

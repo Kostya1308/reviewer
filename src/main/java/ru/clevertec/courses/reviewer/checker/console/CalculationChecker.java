@@ -1,8 +1,7 @@
-package ru.clevertec.courses.reviewer.processor;
+package ru.clevertec.courses.reviewer.checker.console;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 import ru.clevertec.courses.reviewer.constant.Constant;
 import ru.clevertec.courses.reviewer.dto.CompletedReceiptDto;
@@ -22,7 +21,7 @@ import java.util.function.Predicate;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class CalculationProcessor extends AbstractCheckingProcessor {
+public class CalculationChecker extends AbstractConsoleChecker {
 
     private final FileParser fileParser;
 
@@ -80,7 +79,7 @@ public class CalculationProcessor extends AbstractCheckingProcessor {
 
     @Override
     public int getOrder() {
-        return Ordered.LOWEST_PRECEDENCE;
+        return LOWEST_PRECEDENCE;
     }
 
 }
