@@ -1,6 +1,6 @@
 package ru.clevertec.courses.reviewer.exception;
 
-public class IncorrectErrorMessageException extends FailedReviewException {
+public class IncorrectErrorMessageException extends FailedConsoleAppReviewException {
 
     private static final String ERROR_MESSAGE = "Некорректная причина ошибки заполнения чека, сформированного " +
             "путем запуска приложения командой 'java -jar <RunnerClassName>.jar %s";

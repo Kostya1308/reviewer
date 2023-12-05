@@ -1,6 +1,6 @@
 package ru.clevertec.courses.reviewer.exception;
 
-public class RequiredReceiptIsMissingException extends FailedReviewException {
+public class RequiredReceiptIsMissingException extends FailedConsoleAppReviewException {
 
     private static final String ERROR_MESSAGE = "Чек не сформирован. Параметры командной строки: '%s'";
 

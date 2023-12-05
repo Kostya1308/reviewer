@@ -31,7 +31,7 @@
 
 **Запуск приложения**
 
-* ./gradlew bootRun
+* ./gradlew bootRun -DBRANCH_NAME='feature/core' -DRECEIVED_TASKS_PATH='./csv/received/core' -DCORRECT_TASKS_PATH='./csv/correct/core'
 
 ---
 
