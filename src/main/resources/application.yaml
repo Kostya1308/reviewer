@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: reviewer
+
+app:
+  branch-name: ${BRANCH_NAME:feature/core}
+  received-tasks-path: ${RECEIVED_TASKS_PATH:classpath:csv/received/core}
+  correct-tasks-path: ${CORRECT_TASKS_PATH:classpath:csv/correct/core}
+
+  reviewed-app:
+    url: ${REVIEWED_APP:localhost:9090}
