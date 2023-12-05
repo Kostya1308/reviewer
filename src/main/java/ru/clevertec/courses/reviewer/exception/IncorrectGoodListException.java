@@ -2,7 +2,7 @@ package ru.clevertec.courses.reviewer.exception;
 
 import java.util.List;
 
-public class IncorrectGoodListException extends FailedReviewException {
+public class IncorrectGoodListException extends FailedConsoleAppReviewException {
 
     private static final String EMPTY_LINE = "";
     private static final String REDUNDANT_GOODS_MESSAGE = "Лишние товары - %s.";

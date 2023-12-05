@@ -1,6 +1,6 @@
 package ru.clevertec.courses.reviewer.exception;
 
-public class IncorrectFileStructureException extends FailedReviewException {
+public class IncorrectFileStructureException extends FailedConsoleAppReviewException {
 
     private static final String ERROR_MESSAGE = "Некорректная структура файла. Параметры командной строки: '%s'.";
 
