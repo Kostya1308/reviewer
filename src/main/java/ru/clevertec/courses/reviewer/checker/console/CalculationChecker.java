@@ -1,5 +1,7 @@
 package ru.clevertec.courses.reviewer.checker.console;
 
+import static java.util.function.Predicate.not;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -9,11 +11,7 @@ import ru.clevertec.courses.reviewer.dto.TaskDto;
 import ru.clevertec.courses.reviewer.exception.CalculationException;
 import ru.clevertec.courses.reviewer.parser.FileParser;
 
-import static java.util.function.Predicate.not;
-import static ru.clevertec.courses.reviewer.util.FileUtil.*;
-
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -32,7 +30,8 @@ public class CalculationChecker extends AbstractConsoleChecker {
         var receiptDtoToReviewMap = getCompletedReceiptsMap(taskDto.getReceiptDtoToReviewMap(fileParser));
         var correctReceiptDtoMap = getCompletedReceiptsMap(taskDto.getCorrectReceiptDtoMap(fileParser));
 
-        receiptDtoToReviewMap.forEach((key, value) -> checkCalculating(key, value, correctReceiptDtoMap.get(key)));
+        receiptDtoToReviewMap.forEach((key, value) ->
+                checkCalculating(key, value, correctReceiptDtoMap.get(key)));
 
         log.info("The calculation check filter has been successfully passed");
     }
@@ -40,13 +39,16 @@ public class CalculationChecker extends AbstractConsoleChecker {
     private void checkCalculating(String fileName,
                                   CompletedReceiptDto reviewedCompletedReceiptDto,
                                   CompletedReceiptDto correctCompletedReceiptDto) throws CalculationException {
-        List<String> descriptionList = new ArrayList<>();
+        log.info("Starts checking the calculations on the receipt obtained by running the application " +
+                "using the parameters '{}'", fileName);
 
-        List<CompletedReceiptDto.GoodsInfo> reviewedGoodsInfoList = reviewedCompletedReceiptDto.getGoodsInfoList();
-        List<CompletedReceiptDto.GoodsInfo> correctGoodsInfoList = correctCompletedReceiptDto.getGoodsInfoList();
+        var descriptionList = new ArrayList<>();
 
-        CompletedReceiptDto.TotalInfo reviewedTotalInfo = reviewedCompletedReceiptDto.getTotalInfo();
-        CompletedReceiptDto.TotalInfo correctTotalInfo = correctCompletedReceiptDto.getTotalInfo();
+        var reviewedGoodsInfoList = reviewedCompletedReceiptDto.getGoodsInfoList();
+        var correctGoodsInfoList = correctCompletedReceiptDto.getGoodsInfoList();
+
+        var reviewedTotalInfo = reviewedCompletedReceiptDto.getTotalInfo();
+        var correctTotalInfo = correctCompletedReceiptDto.getTotalInfo();
 
         reviewedGoodsInfoList.forEach(reviewedGoodsInfo -> correctGoodsInfoList.stream()
                 .filter(goodsInfo -> Objects.equals(goodsInfo.getDescription(), reviewedGoodsInfo.getDescription()))
@@ -58,8 +60,11 @@ public class CalculationChecker extends AbstractConsoleChecker {
                 .ifPresent(totalInfo -> descriptionList.add(Constant.TOTAL_HEADER));
 
         if (!descriptionList.isEmpty()) {
-            throw new CalculationException(substringToDot(fileName), descriptionList.toString());
+            throw new CalculationException(fileName, descriptionList.toString());
         }
+
+        log.info("Checking the calculations on the receipt, obtained by running the application" +
+                " using the parameters '{}' has been successfully passed", fileName);
     }
 
     private static Predicate<CompletedReceiptDto.GoodsInfo> getCorrectGoodsPredicate(CompletedReceiptDto.GoodsInfo reviewedGoodsInfo) {

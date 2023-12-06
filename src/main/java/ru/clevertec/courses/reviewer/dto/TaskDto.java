@@ -1,5 +1,7 @@
 package ru.clevertec.courses.reviewer.dto;
 
+import static ru.clevertec.courses.reviewer.util.FileUtil.substringToDot;
+
 import lombok.Builder;
 import lombok.Data;
 import ru.clevertec.courses.reviewer.parser.FileParser;
@@ -23,7 +25,7 @@ public class TaskDto {
         return Optional.ofNullable(correctReceiptDtoMap)
                 .orElseGet(() -> {
                     var receiptDtoMap = correctFiles.stream()
-                            .collect(Collectors.toMap(File::getName, fileParser::parseCsvFile));
+                            .collect(Collectors.toMap(file -> substringToDot(file.getName()), fileParser::parseCsvFile));
                     this.setCorrectReceiptDtoMap(receiptDtoMap);
                     return correctReceiptDtoMap;
                 });
@@ -33,7 +35,7 @@ public class TaskDto {
         return Optional.ofNullable(receiptDtoToReviewMap)
                 .orElseGet(() -> {
                     var receiptDtoMap = filesToReview.stream()
-                            .collect(Collectors.toMap(File::getName, fileParser::parseCsvFile));
+                            .collect(Collectors.toMap(file -> substringToDot(file.getName()), fileParser::parseCsvFile));
                     this.setReceiptDtoToReviewMap(receiptDtoMap);
                     return receiptDtoToReviewMap;
                 });
