@@ -1,5 +1,7 @@
 package ru.clevertec.courses.reviewer.checker.console;
 
+import static java.util.function.Predicate.not;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -9,9 +11,6 @@ import ru.clevertec.courses.reviewer.dto.TaskDto;
 import ru.clevertec.courses.reviewer.exception.IncorrectDateTimeFormat;
 import ru.clevertec.courses.reviewer.exception.IncorrectMonetaryValueFormat;
 import ru.clevertec.courses.reviewer.parser.FileParser;
-
-import static java.util.function.Predicate.not;
-import static ru.clevertec.courses.reviewer.util.FileUtil.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -51,6 +50,9 @@ public class DataFormatChecker extends AbstractConsoleChecker {
 
     private void checkDateTimeFormat(Map.Entry<String, CompletedReceiptDto> receiptDtoEntry)
             throws IncorrectDateTimeFormat {
+        log.info("Starts checking the date/time format on the receipt obtained by running the application " +
+                "using the parameters '{}'", receiptDtoEntry.getKey());
+
         CompletedReceiptDto.DateTimeInfo dateTimeInfo = receiptDtoEntry.getValue().getDateTimeInfo();
 
         try {
@@ -58,12 +60,18 @@ public class DataFormatChecker extends AbstractConsoleChecker {
             LocalDate.parse(dateTimeInfo.getDate(), DateTimeFormatter.ofPattern(DATE_PATTERN));
 
         } catch (DateTimeParseException e) {
-            throw new IncorrectDateTimeFormat(substringToDot(receiptDtoEntry.getKey()));
+            throw new IncorrectDateTimeFormat(receiptDtoEntry.getKey());
         }
+
+        log.info("Checking the date/time format on the receipt, obtained by running the application" +
+                " using the parameters '{}' has been successfully passed", receiptDtoEntry.getKey());
     }
 
     private void checkMonetaryValuesFormat(Map.Entry<String, CompletedReceiptDto> receiptDtoEntry)
             throws IncorrectDateTimeFormat {
+        log.info("Starts checking the monetary values format on the receipt obtained by running the " +
+                "application using the parameters '{}'", receiptDtoEntry.getKey());
+
         List<String> goodDescriptions = new ArrayList<>();
 
         receiptDtoEntry.getValue().getGoodsInfoList()
@@ -78,9 +86,11 @@ public class DataFormatChecker extends AbstractConsoleChecker {
                 .ifPresent(totalInfo -> goodDescriptions.add(Constant.TOTAL_HEADER));
 
         if (!goodDescriptions.isEmpty()) {
-            throw new IncorrectMonetaryValueFormat(substringToDot(receiptDtoEntry.getKey()),
-                    goodDescriptions.toString());
+            throw new IncorrectMonetaryValueFormat(receiptDtoEntry.getKey(), goodDescriptions.toString());
         }
+
+        log.info("Checking the monetary values format on the receipt, obtained by running the application" +
+                " using the parameters '{}' has been successfully passed", receiptDtoEntry.getKey());
     }
 
     private static Predicate<CompletedReceiptDto.GoodsInfo> getGoodsInfoPredicate() {
